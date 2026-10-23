@@ -5,7 +5,8 @@
     "func-visibility": ["error", { "ignoreConstructors": true }],
     "not-rely-on-time": "off",
     "import-path-check": "off",
-    "use-natspec": "off",
-    "gas-small-strings": "off"
+    "use-natspec": ["warn", { "author": { "enabled": false } }],
+    "gas-small-strings": "off",
+    "gas-struct-packing": "off"
   }
 }
