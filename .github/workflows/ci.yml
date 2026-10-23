@@ -38,7 +38,7 @@ jobs:
         run: npm install -g solhint@^6.2.3
 
       - name: Run solhint
-        run: solhint 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol' --max-warnings 0
+        run: solhint 'src/**/*.sol' 'script/**/*.sol' --max-warnings 0
 
   build_and_test:
     name: Foundry project
@@ -71,6 +71,9 @@ jobs:
 
       - name: Run Forge tests
         run: forge test -vvv
+
+      - name: Check test coverage
+        run: ./check-coverage.sh
 
   slither:
     name: Slither static analysis

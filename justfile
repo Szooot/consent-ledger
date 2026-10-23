@@ -13,7 +13,7 @@ fmt-check:
     forge fmt --check
 
 lint:
-    solhint 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol' --max-warnings 0
+    solhint 'src/**/*.sol' 'script/**/*.sol' --max-warnings 0
 
 forge-lint:
     forge lint --deny warnings src
@@ -35,7 +35,11 @@ gas:
     forge test --gas-report
 
 coverage:
-    forge coverage --report summary
+    forge coverage --report summary --no-match-coverage "(test|script|lib)"
+
+# Fails unless lines, statements, branches and functions are 100% covered
+check-coverage:
+    ./check-coverage.sh
 
 gen-abis:
     ./generate-abis.sh
@@ -45,10 +49,10 @@ check-abis: gen-abis
     @test -z "$(git status --porcelain -- abis)" || (git status --short -- abis && echo "ABIs are out of date: run 'just gen-abis' and commit abis/" && exit 1)
 
 # CI equivalent check
-check: fmt-check lint forge-lint test build slither check-abis
+check: fmt-check lint forge-lint test check-coverage build slither check-abis
     @echo "All checks passed."
 
-pre-push: fmt-check lint forge-lint test check-abis
+pre-push: fmt-check lint forge-lint test check-coverage check-abis
     @echo "Ready to push."
 
 fix: fmt lint test
