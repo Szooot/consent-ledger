@@ -74,14 +74,14 @@ contract ConsentManagerTest is ConsentManagerHelper {
 
     function testGrantConsentBySigRenewsConsent() public {
         _grant(company, PURPOSE, expiresAt);
-        vm.warp(block.timestamp + 1 days);
-        deadline = block.timestamp + 1 hours;
+        vm.warp(vm.getBlockTimestamp() + 1 days);
+        deadline = vm.getBlockTimestamp() + 1 hours;
         uint64 laterExpiry = expiresAt + 30 days;
 
         _grant(company, PURPOSE, laterExpiry);
 
         Consent memory consent = manager.getConsent(DATASET_ID, company, PURPOSE);
-        assertEq(consent.grantedAt, block.timestamp);
+        assertEq(consent.grantedAt, vm.getBlockTimestamp());
         assertEq(consent.expiresAt, laterExpiry);
         assertEq(manager.nonces(client), 2);
     }
@@ -280,7 +280,7 @@ contract ConsentManagerTest is ConsentManagerHelper {
 
     function testRevokeConsentBySig() public {
         _grant(company, PURPOSE, expiresAt);
-        vm.warp(block.timestamp + 1 days);
+        vm.warp(vm.getBlockTimestamp() + 1 days);
         bytes memory signature = _signRevoke(clientKey, DATASET_ID, company, PURPOSE, 1, deadline + 1 days);
 
         vm.expectEmit(true, true, true, true, address(manager));
@@ -293,7 +293,7 @@ contract ConsentManagerTest is ConsentManagerHelper {
         assertEq(manager.nonces(client), 2);
 
         Consent memory consent = manager.getConsent(DATASET_ID, company, PURPOSE);
-        assertEq(consent.revokedAt, block.timestamp);
+        assertEq(consent.revokedAt, vm.getBlockTimestamp());
         assertEq(consent.expiresAt, expiresAt);
     }
 
