@@ -1,0 +1,12 @@
+{
+  "name": "consent-ledger-deployment-tools",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "7.0.2"
+  }
+}

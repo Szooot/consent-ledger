@@ -7,9 +7,13 @@ out/
 .ignore/
 
 # Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+/broadcast
+
+# Deployment journal
+/.deployment/
+
+# Node
+node_modules/
 
 # Docs
 docs/

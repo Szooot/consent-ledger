@@ -48,11 +48,33 @@ gen-abis:
 check-abis: gen-abis
     @test -z "$(git status --porcelain -- abis)" || (git status --short -- abis && echo "ABIs are out of date: run 'just gen-abis' and commit abis/" && exit 1)
 
+deployment-tests:
+    just typecheck-deployment
+    just test-deployment-ts
+
+typecheck-deployment:
+    npx tsc --noEmit
+
+test-deployment-ts:
+    node --test script/*.test.ts
+
+deploy network *args:
+    node script/deployment.ts deploy {{ network }} {{ args }}
+
+finalize-deploy network:
+    node script/deployment.ts finalize-deploy {{ network }}
+
+verify network:
+    node script/deployment.ts verify-sources {{ network }}
+
+check-live network:
+    node script/deployment.ts check-live {{ network }}
+
 # CI equivalent check
-check: fmt-check lint forge-lint test check-coverage build slither check-abis
+check: fmt-check lint forge-lint test deployment-tests check-coverage build slither check-abis
     @echo "All checks passed."
 
-pre-push: fmt-check lint forge-lint test check-coverage check-abis
+pre-push: fmt-check lint forge-lint test deployment-tests check-coverage check-abis
     @echo "Ready to push."
 
 fix: fmt lint test
