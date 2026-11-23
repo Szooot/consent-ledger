@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  detectRuntimeHardfork,
   extractBroadcastTransactionHashes,
   loadTransactionReceipts,
   verifyLiveDeployment,
@@ -172,6 +173,19 @@ test("stops waiting for finality when cancelled", async () => {
     waitForFinality(run, rpcUrl, [receipt(1, 100)], { signal: controller.signal }),
     /cancelled/,
   );
+});
+
+test("detects Amsterdam from the block access list hash of the latest block", async () => {
+  const block = (fields: Record<string, string>): CommandRunner => async (_command, args) => {
+    assert.deepEqual(args.slice(3), ["eth_getBlockByNumber", "latest", "false"]);
+    return JSON.stringify({ number: "0x64", hash: blockHash, ...fields });
+  };
+  assert.equal(await detectRuntimeHardfork(block({ blockAccessListHash: blockHash }), rpcUrl), "amsterdam");
+  assert.equal(await detectRuntimeHardfork(block({}), rpcUrl), undefined);
+  const failing: CommandRunner = async () => {
+    throw new Error("connection refused");
+  };
+  await assert.rejects(detectRuntimeHardfork(failing, rpcUrl), /could not read latest block/);
 });
 
 test("accepts a live deployment that matches the manifest", async () => {

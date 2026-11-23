@@ -116,6 +116,25 @@ export async function waitForFinality(
   }
 }
 
+// Contracts are compiled for Osaka, which every supported network runs, but Amsterdam (Glamsterdam) reprices
+// contract creation several times over. Forge sets gas limits from its own simulation, so it has to simulate
+// with the rules the chain runs or the deployment runs out of gas. Blocks carry a block access list hash
+// (EIP-7928) from Amsterdam on.
+export async function detectRuntimeHardfork(
+  run: CommandRunner,
+  rpcUrl: string,
+  signal?: AbortSignal,
+): Promise<"amsterdam" | undefined> {
+  let output: string;
+  try {
+    output = await run("cast", ["rpc", "--rpc-url", rpcUrl, "eth_getBlockByNumber", "latest", "false"], { signal });
+  } catch (error) {
+    throw new Error("could not read latest block", { cause: error });
+  }
+  const block = parseJsonObject(output, "latest block");
+  return block.blockAccessListHash === undefined ? undefined : "amsterdam";
+}
+
 export async function verifyManifestContracts(
   run: CommandRunner,
   rpcUrl: string,

@@ -28,6 +28,7 @@ import {
   type PendingDeploy,
 } from "./deployment-state.ts";
 import {
+  detectRuntimeHardfork,
   extractBroadcastTransactionHashes,
   loadTransactionReceipts,
   verifyLiveDeployment,
@@ -448,6 +449,8 @@ async function runDeployScript(
   build: Build,
   inputs: DeploymentInputs,
 ): Promise<void> {
+  const hardfork = await detectRuntimeHardfork(commandRunner(context), rpc(context), context.signal);
+  if (hardfork !== undefined) console.error(`${context.network} runs ${hardfork}; simulating the deployment with its rules`);
   await runProcess(
     context.forge,
     [
@@ -463,6 +466,7 @@ async function runDeployScript(
       "--rpc-url",
       rpc(context),
       "--slow",
+      ...(hardfork === undefined ? [] : ["--hardfork", hardfork]),
     ],
     {
       environment: {
