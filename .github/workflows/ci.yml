@@ -103,8 +103,15 @@ jobs:
           persist-credentials: false
           submodules: recursive
 
-      - name: Run Slither
-        uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
-          slither-config: slither.config.json
-          fail-on: medium
+          version: v1.8.6
+
+      # Same command as `just slither`, with the pinned Foundry above instead of the slither-action
+      # container, which installs its own Node and Foundry and runs `npm ci`.
+      - name: Install Slither
+        run: pipx install slither-analyzer==0.11.6
+
+      - name: Run Slither
+        run: slither . --config-file slither.config.json --fail-medium

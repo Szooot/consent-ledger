@@ -18,7 +18,7 @@ lint:
 forge-lint:
     forge lint --deny warnings src
 
-# Requires slither: `pip install slither-analyzer`
+# Requires slither: `pipx install slither-analyzer==0.11.6` (same version as CI)
 slither:
     slither . --config-file slither.config.json --fail-medium
 
