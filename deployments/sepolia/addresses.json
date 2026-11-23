@@ -1,0 +1,10 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deploymentBlock": 12194976,
+  "contracts": {
+    "ConsentManager": "0x9b3ffdd5E129Eff19D64E90b2F01b160C3557E9d",
+    "DatasetRegistry": "0xf71e651c642b95Cb46d4b62C7c2fEDe41145dE61",
+    "UsageLog": "0x4DB133FEd1D552225DBb111C22DbC635e7B767DE"
+  }
+}
